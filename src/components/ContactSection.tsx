@@ -7,8 +7,9 @@ const ContactSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = encodeURIComponent(`Hi! I'm ${form.name}. I need help with: ${form.service}. ${form.message}`);
-    window.open(`https://wa.me/923022120509?text=${msg}`, "_blank");
+    const subject = encodeURIComponent(`Contact Form: ${form.service}`);
+    const body = encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nService: ${form.service}\n\nMessage:\n${form.message}`);
+    window.open(`mailto:smartcodeitsolutions@gmail.com?subject=${subject}&body=${body}`, "_blank");
   };
 
   return (
@@ -56,12 +57,19 @@ const ContactSection = () => {
                 className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
                 <option value="">Select a service</option>
-                <option>Web Development</option>
-                <option>E-commerce</option>
-                <option>Digital Marketing</option>
-                <option>AI & Automation</option>
-                <option>Mobile App Development</option>
-                <option>Design & Branding</option>
+                <option>Full-Stack Web Development</option>
+                <option>E-commerce Setup & Infrastructure</option>
+                <option>Premium Ebooks & Lead Magnets</option>
+                <option>Custom Template Design</option>
+                <option>Visual Content & Motion Graphics</option>
+                <option>Faceless Content Automation</option>
+                <option>Strategic Infographic Design</option>
+                <option>Digital Marketing & Performance</option>
+                <option>Technical Maintenance & Support</option>
+                <option>Social Media Management</option>
+                <option>AI-Powered Workflow Automation</option>
+                <option>Mobile & App Development</option>
+                <option>Elite Merchandise & Custom Branding</option>
               </select>
             </div>
             <div>

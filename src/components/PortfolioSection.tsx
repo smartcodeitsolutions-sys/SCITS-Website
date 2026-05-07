@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink, X, Play } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const categories = ["All", "Web Development", "E-commerce", "Marketing", "Branding", "AI Automation", "Apps"];
 
@@ -34,6 +41,7 @@ const projects = [
   { title: "AutoBot AI Assistant", category: "AI Automation", desc: "Custom AI chatbot reducing customer support tickets by 65%.", color: "neon-glow-cyan" },
   { title: "FitTrack Mobile App", category: "Apps", desc: "Cross-platform fitness app with real-time tracking and social features.", color: "neon-glow-purple" },
 ];
+
 
 const SlideshowPreview = ({
   images,
@@ -107,8 +115,11 @@ const PortfolioSection = () => {
   const [selectedProjectTitle, setSelectedProjectTitle] = useState<string | null>(null);
   const [selectedImageProjectTitle, setSelectedImageProjectTitle] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [expandedProjects, setExpandedProjects] = useState(false);
 
   const filtered = filter === "All" ? projects : projects.filter((p) => p.category === filter);
+  const portfolioItemsToShow = expandedProjects ? filtered : filtered.slice(0, 4);
+  
   const selectedProject = selectedProjectTitle ? projects.find((project) => project.title === selectedProjectTitle) ?? null : null;
   const selectedImageProject = selectedImageProjectTitle
     ? projects.find((project) => project.title === selectedImageProjectTitle) ?? null
@@ -117,6 +128,7 @@ const PortfolioSection = () => {
   return (
     <section id="portfolio" className="py-24 relative">
       <div className="container mx-auto px-4">
+        {/* Portfolio Section Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
           <span className="text-sm font-semibold text-primary tracking-wider uppercase">Our Work</span>
           <h2 className="text-3xl sm:text-4xl font-black mt-3 mb-4">
@@ -125,25 +137,31 @@ const PortfolioSection = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">Explore our latest projects and see how we transform ideas into digital reality.</p>
         </motion.div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${
-                filter === cat ? "bg-primary text-primary-foreground neon-glow-green" : "glass text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Dropdown Filter */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true }}
+          className="flex justify-center mb-12"
+        >
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-full sm:w-64 glass">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </motion.div>
 
-        {/* Grid */}
-        <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Portfolio Grid */}
+        <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
           <AnimatePresence mode="popLayout">
-            {filtered.map((project, i) => (
+            {portfolioItemsToShow.map((project) => (
               <motion.div
                 key={project.title}
                 layout
@@ -152,7 +170,7 @@ const PortfolioSection = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
                 whileHover={{ y: -8 }}
-                className={`group rounded-xl overflow-hidden glass hover:${project.color} transition-all duration-300`}
+                className={`group rounded-xl overflow-hidden glass hover:${project.color} transition-all duration-300 cursor-pointer`}
               >
                 {project.title === "Blood Bridge" ? (
                   <SlideshowPreview
@@ -172,7 +190,7 @@ const PortfolioSection = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
                       <button
                         onClick={() => setSelectedProjectTitle(project.title)}
-                        className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold flex items-center gap-2"
+                        className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors"
                       >
                         View Case Study <ExternalLink size={14} />
                       </button>
@@ -189,7 +207,30 @@ const PortfolioSection = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Case Study Modal */}
+        {/* View More Button for Portfolio */}
+        {filtered.length > 4 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }}
+            className="flex justify-center mb-20"
+          >
+            <button
+              onClick={() => setExpandedProjects(!expandedProjects)}
+              className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all duration-300 flex items-center gap-2"
+            >
+              {expandedProjects ? "Show Less" : "View More Projects"}
+              <motion.span
+                animate={{ rotate: expandedProjects ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                ↓
+              </motion.span>
+            </button>
+          </motion.div>
+        )}
+
+        {/* Project Case Study Modal */}
         <AnimatePresence>
           {selectedProject !== null && (
             <motion.div
@@ -233,7 +274,9 @@ const PortfolioSection = () => {
                       <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Discontinued Project ⚒️</p>
                     )}
                   </div>
-                  <button onClick={() => setSelectedProjectTitle(null)} className="text-muted-foreground hover:text-foreground">✕</button>
+                  <button onClick={() => setSelectedProjectTitle(null)} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <X size={24} />
+                  </button>
                 </div>
                 <div className="space-y-6">
                   <div>
